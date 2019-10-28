@@ -44,7 +44,7 @@ const result = await db('user').find({ email: 'vidar@example.com' })
 
 
 // Count documents
-const result = await db('user').find({ email: 'vidar@example.com' })
+const result = await db('user').count({ email: 'vidar@example.com' })
 
 // Returns the count as an integer
 2
