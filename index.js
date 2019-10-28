@@ -7,25 +7,33 @@ const dbPath = process.env.DB_PATH || path.join(__dirname, 'wdb')
 let main
 const dbs = {}
 
-
-function stream(db, options = {}, query = {}) {
+function search(db, options = {}, query) {
+  const hasQuery = query && Object.keys(query).length
+  // TODO: Set default limit?
+  // if (typeof options.limit === 'undefined') {
+  //   options.limit = 20
+  //}
   const results = []
   return new Promise(function(resolve, reject) {
     db.createReadStream(options)
     .on('data', function (data) {
-      console.log(data.key, '=', data.value)
-      results.push(data.value)
+      if (hasQuery) {
+        for (const key in query) {
+          if (data.value[key] === query[key]) {
+            results.push(data.value)
+          }
+        }
+      } else {
+        results.push(data.value)
+      }
     })
     .on('error', function (err) {
-      console.log('Oh my!', err)
       reject(err)
     })
     .on('close', function () {
-      console.log('Stream closed')
       resolve(results)
     })
     .on('end', function () {
-      console.log('Stream ended')
       resolve(results)
     })
   })
@@ -37,7 +45,6 @@ function wdb(name) {
   }
   let db = dbs[name]
   if (!db) {
-    console.log('Creating user db')
     db = dbs[name] = sub(main, name, { valueEncoding: 'json' })
   }
 
@@ -45,61 +52,54 @@ function wdb(name) {
     clear: async function() {
       return db.clear()
     },
-    create: async function(values, options) {
-      if (!values.id) {
-        values.id = cuid()
+    create: async function(values) {
+      let id = values.id
+      if (!id) {
+        id = values.id = cuid()
       }
-      await db.put(values.id, values)
-      return values
+      await db.put(id, values)
+      return { id }
     },
-    update: async function(query, values, options) {
-
+    update: async function(query, values) {
+      const results = await search(db, {}, query)
+      for (let i = 0; i < results.length; i++) {
+        const r = results[i]
+        await db.put(r.id, { ...r, ...values })
+      }
+      return { n: results.length }
     },
-    delete: async function(query, options) {
-
+    delete: async function(query) {
+      const results = await search(db, {}, query)
+      for (let i = 0; i < results.length; i++) {
+        await db.del(results[i].id)
+      }
+      return { n: results.length }
     },
-    get: async function(query, options) {
-      const results = await stream(db)
-      console.log(results)
+    get: async function(query) {
+      const results = await search(db, {}, query)
       return results[0]
+      // OPTIMIZE: This is way faster if we have the id
       // return db.get(query.id)
     },
-    find: async function(query, options) {
-
+    find: async function(query) {
+      const results = await search(db, {}, query)
+      return results
     },
-    count: async function(query, options) {
-
+    count: async function(query) {
+      // OPTIMIZE: Use leveldb iterator length instead?
+      const results = await search(db, {}, query)
+      return results.length
     }
   }
 }
 
-wdb.close = async function () {
+wdb.close = async function() {
   for(const key in dbs) {
     const db = dbs[key]
-    console.log('CLOSING', key)
     await new Promise(function(resolve) {
-      db.close(function (err){
-        resolve()
-      })
+      db.close(resolve)
     })
   }
 }
 
 module.exports = wdb
-
-// How it works:
-// db.createCollection('user', { index: ['id'] })
-
-// same as
-// db.createCollection('user'
-// { index: ['id'] } is default
-
-
-// Alternatives:
-
-
-// 1. Store as 'user::<id>'
-
-// 2. Store with index: user ->
-
-// 3. Store as sublevel.
