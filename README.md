@@ -1,7 +1,7 @@
 # WaveDB
 Javascript document database based on LevelDB.
 
-This library is meant for sites with low to medium traffic demands running on a single server. It does not require setting up a server and is portable, moving your data is just zipping up the database directory and copying it somewhere else.
+This library is meant for sites with low to medium traffic demands running on a single machine. It does not require installing a separate database server and is portable, moving your data is just zipping up the database directory and copying it somewhere else.
 
 ### Install
 In Node.js:
