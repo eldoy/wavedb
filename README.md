@@ -42,7 +42,6 @@ const result = await db('user').find({ email: 'vidar@example.com' })
 // Returns an array of the documents
 [{ id: 'ck2a5xf2c0000okk3dbvz4n3i', email: 'vidar@example.com' }]
 
-
 // Count documents
 const result = await db('user').count({ email: 'vidar@example.com' })
 
