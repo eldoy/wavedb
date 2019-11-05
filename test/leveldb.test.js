@@ -1,7 +1,7 @@
-const db = require('../index.js')
+const db = require('../index.js')()
 const cuid = require('cuid')
 
-describe('wdb', () => {
+describe('leveldb', () => {
   beforeEach(async function() {
     await db('user').clear()
   })

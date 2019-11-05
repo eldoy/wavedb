@@ -1,4 +1,5 @@
-const leveldb = require('./lib/leveldb')
+const leveldb = require('./lib/leveldb.js')
 
-
-module.exports = leveldb
+module.exports = function(options = {}) {
+  return leveldb
+}

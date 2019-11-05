@@ -10,7 +10,7 @@ In Node.js:
 ### Usage
 ```javascript
 // Require library
-const db = require('wavedb')
+const db = require('wavedb')()
 
 // Create document, 'user' is the name of the model/collection
 const result = await db('user').create({ email: 'vidar@example.com' })
