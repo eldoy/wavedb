@@ -1,6 +1,6 @@
 {
   "name": "wavedb",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Javascript document database based on LevelDB",
   "main": "index.js",
   "directories": {
@@ -11,16 +11,16 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/fugroup/wdb"
+    "url": "https://github.com/eldoy/wavedb"
   },
   "keywords": [],
   "author": "Vidar Eldøy <vidar@eldoy.com>",
-  "license": "ISC",
+  "license": "MIT",
   "devDependencies": {
     "jest": "^24.9.0"
   },
   "dependencies": {
-    "cuid": "^2.1.6",
+    "cuid": "^2.1.8",
     "level": "^6.0.0",
     "subleveldown": "^4.1.4"
   }

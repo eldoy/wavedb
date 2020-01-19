@@ -54,4 +54,4 @@ await db('user').clear()
 // Close connections manually, useful for testing
 await db.close()
 ```
-ISC licensed. Enjoy!
+MIT licensed. Enjoy!
